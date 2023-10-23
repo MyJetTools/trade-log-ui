@@ -3,6 +3,6 @@ using SimpleTrading.SettingsReader;
 [YamlAttributesOnly]
 public class SettingsModel
 {
-    [YamlProperty("TenantFlows")]
+    [YamlProperty("TradeLogGrpc")]
     public string TradeLogGrpc { get; set; }
 }
