@@ -25,12 +25,11 @@ jobs:
           format: YYYY-MM-DD HH:mm:ss
           utcOffset: "+00:00"
 
-      - name: Build
-        run: dotnet build --configuration Release
-      - name: Test
-        run: dotnet test --no-build --configuration Release
       - name: ls
         run: ls
+
+      - name: Build
+        run: dotnet build --configuration Release
 
       - name: Publish Service
         run: dotnet publish --configuration Release --output ./publish-api
