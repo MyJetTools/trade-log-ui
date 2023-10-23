@@ -1,0 +1,30 @@
+syntax = "proto3";
+package trade_log;
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+message QueryTradeLogGrpcRequest{
+  google.protobuf.StringValue TraderId = 1;
+  google.protobuf.StringValue AccountId = 2;
+  google.protobuf.StringValue Component = 3;
+  google.protobuf.StringValue ProcessId = 4;
+  google.protobuf.StringValue OperationId = 5;
+  optional uint64 DateFrom = 6;
+  optional uint64 DateTo = 7;
+}
+
+message TradeLogGrpcModel{
+  string TraderId = 1;
+  string AccountId = 2;
+  string Component = 3;
+  optional string ProcessId = 4; 
+  optional string OperationId = 5;
+  map<string, string> Data = 6;
+  uint64 Date = 7;
+  string Message = 8;
+}
+
+service TradeLogGrpcService {
+  rpc Query(trade_log.QueryTradeLogGrpcRequest) returns (stream TradeLogGrpcModel);
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
