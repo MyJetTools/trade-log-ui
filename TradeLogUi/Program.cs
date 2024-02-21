@@ -6,7 +6,7 @@ using TradeLog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// var settings = new SettingsModel
+// var settingsModel = new SettingsModel
 // {
 //     TradeLogGrpc = "http://127.0.0.1:32011",
 // };

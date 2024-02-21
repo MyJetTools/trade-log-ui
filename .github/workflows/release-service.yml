@@ -26,7 +26,7 @@ jobs:
           utcOffset: "+00:00"
 
       - name: ls
-        run: ls
+        run: ls -la
 
       - name: Build
         run: dotnet build --configuration Release

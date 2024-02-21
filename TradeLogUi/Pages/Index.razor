@@ -3,6 +3,7 @@
 @using Newtonsoft.Json
 @using TradeLog
 @using Grpc.Core.Utils
+@using YamlConverter
 @inject TradeLogGrpcService.TradeLogGrpcServiceClient TradeLog
 <style type="text/css">
     .mud-table-head .header-centered th {
@@ -16,7 +17,6 @@
 </style>
 
 <MudCardContent Class="pa-0">
-    
     <MudSimpleTable Hover="true" Bordered="true" Striped="false" Style="overflow-x: auto;">
                       
                             <tbody>
@@ -46,6 +46,7 @@
                                 
                                 <th>
                                     <MudButton Variant="Variant.Outlined" OnClick="Query" Color="Color.Success">Query</MudButton>
+                                    <MudButton Variant="Variant.Outlined" OnClick="@(() => DataLimitSwithc = !DataLimitSwithc)" Color="Color.Warning">DATA LIMIT</MudButton>
                                 </th>
                             </tr >
                             </tbody>
@@ -65,24 +66,26 @@
             <MudTh colspan="1">Actions</MudTh>
         </MudTHeadRow>
         <MudTHeadRow>
+            <MudTh>#</MudTh>
             <MudTh>TraderId</MudTh>
             <MudTh>AccountId</MudTh>
+            <MudTh>Message</MudTh>
             <MudTh>Component</MudTh>
             <MudTh>ProcessId</MudTh>
             <MudTh>OperationId</MudTh>
-            <MudTh>Message</MudTh>
             <MudTh>Date</MudTh>
             <MudTh>Actions</MudTh>
         </MudTHeadRow>
     </HeaderContent>
     <RowTemplate>
+        <MudTd DataLabel="Nr">@Count()</MudTd>
         <MudTd DataLabel="Nr">@context.Value.TraderId</MudTd>
         <MudTd DataLabel="Sign">@context.Value.AccountId</MudTd>
+        <MudTd DataLabel="Molar mass">@context.Value.Message</MudTd>
         <MudTd DataLabel="Sign">@context.Value.Component</MudTd>
         <MudTd DataLabel="Name">@context.Value.ProcessId</MudTd>
         <MudTd DataLabel="Name">@context.Value.OperationId</MudTd>
-        <MudTd DataLabel="Molar mass">@context.Value.Message</MudTd>
-        <MudTd DataLabel="Molar mass">@context.Value.Date</MudTd>
+        <MudTd DataLabel="Molar mass">@context.Value.Date.ToUniversalTime()</MudTd>
         <MudTd DataLabel="Molar mass">
             <MudButton Variant="Variant.Filled" OnClick="() => HandleUpdateShowData(context.Key)">Data</MudButton>
         </MudTd>
@@ -135,14 +138,14 @@
 
 @code
 {
+    private bool DataLimitSwithc = true;
+    private int CountRows = 1;
     public Dictionary<string, TradeLogModel> Logs = new ();
     private readonly TradeLogQuery _query = TradeLogQuery.CreateDefault();
 
-
     public async Task Query()
     {
-        Console.WriteLine(JsonConvert.SerializeObject(_query.ToGrpc()));
-        Logs = (await TradeLog.Query(_query.ToGrpc()).ResponseStream.ToListAsync()).Select(itm => new TradeLogModel(itm))
+        Logs = (await TradeLog.Query(_query.ToGrpc()).ResponseStream.ToListAsync()).Select(itm => new TradeLogModel(itm, DataLimitSwithc))
             .ToDictionary(itm => itm.Id, itm => itm);
     }
 
@@ -156,7 +159,19 @@
     private (int, string) FormatJsonString(string src)
     {
         var json = JsonConvert.DeserializeObject(src);
-        var obj = JsonConvert.SerializeObject(json, Formatting.Indented);
+        var obj = YamlConvert.SerializeObject(json);
+
+        if (obj != null && DataLimitSwithc && obj.Length > 300)
+        {
+            obj = obj.Substring(0, 300);
+            obj = $"{obj}...";
+        }
+        
         return (obj.Count(itm => itm.Equals('\n')), obj);
+    }
+
+    private int Count()
+    {
+        return CountRows++;
     }
 }

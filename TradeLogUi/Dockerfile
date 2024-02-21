@@ -1,6 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
+
 WORKDIR /app
 COPY . .
+
 ARG app_compilation_date
 ARG app_version
 ARG ui_version

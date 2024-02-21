@@ -16,7 +16,7 @@ public class TradeLogModel
     public DateTime Date { get; set; }
     public bool ShowDetails { get; set; }
 
-    public TradeLogModel(TradeLogGrpcModel src)
+    public TradeLogModel(TradeLogGrpcModel src, bool dataLimit)
     {
         Id = Guid.NewGuid().ToString();
         TraderId = src.TraderId;
@@ -28,6 +28,11 @@ public class TradeLogModel
         Data = src.Data.OrderByDescending(itm => itm.Value.Length).ToDictionary(itm => itm.Key, itm => itm.Value);
         Date = src.Date.ToDateTime();
         ShowDetails = false;
+
+        if (dataLimit)
+        {
+            
+        }
     }
 }
 
